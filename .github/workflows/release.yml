@@ -1,0 +1,65 @@
+name: Release to Docker Hub
+
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+      # Use to fix error on 'Build Docker image' step.
+      # Error: buildx failed with: error: failed to solve: invalid reference format: repository name must be lowercase
+      # https://github.community/t/github-actions-repository-name-must-be-lowercase/184924
+      - name: Set repository.name name to lowercase 
+        run: |
+          echo "REPOSITORY_NAME_LC=${REPOSITORY_NAME,,}" >>${GITHUB_ENV}
+        env:
+          REPOSITORY_NAME: '${{ github.event.repository.name }}'
+          
+      - name: Set up Docker Buildx
+        id:   buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
+
+      - name: Install Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.18.2
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch required Go modules
+        run:  go mod download
+
+      - name: Build
+        run:  go build -v ./...
+
+      - name: Build and push Docker image
+        id:   docker_build
+        uses: docker/build-push-action@v2
+        with:
+          builder: ${{ steps.buildx.outputs.name }}
+          push: false #if true then Error: buildx failed with: error: push and load may not be set together at the moment
+          load: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ env.REPOSITORY_NAME_LC }}:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache
+
+      - name: Image digest
+        run: echo ${{ steps.docker_build.outputs.digest }}
