@@ -1,0 +1,11 @@
+http:
+  proto: "http"
+  addr: "0.0.0.0"
+  port: 3000
+oauth2:
+  client_id: "auth-code-client"
+  client_secret: "secret"
+  hydra_proto: "http"
+  hydra_host: "127.0.0.1"
+  hydra_public_port: 4444
+  hydra_admin_port: 4445

@@ -1,0 +1,20 @@
+<body>
+    <h1>Account service! Welcome to the exemplary OAuth 2.0 Consumer!</h1>
+    <p>This is an example app which emulates an OAuth 2.0 consumer application. Usually, this would be your web or
+        mobile
+        application and would use an <a href="https://oauth.net/code/">OAuth 2.0</a> or <a
+            href="https://oauth.net/code/">OpenID
+            Connect</a> library.</p>
+    <p>This example requests an OAuth 2.0 Access, Refresh, and OpenID Connect ID Token from the OAuth 2.0 Server (Ory
+        Hydra).
+        To initiate the flow, click the "Authorize Application" button.</p>
+
+    {{if .isAuth}}
+        <p>You are signed in!</p>
+        <p><a href="{{ .URL }}">Log Out</a></p>
+    {{else}}
+        <p><a href="{{ .URL }}">Log in</a></p>
+    {{end}}
+</body>
+
+</html>

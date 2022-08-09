@@ -1,8 +1,8 @@
 package main
 
-import "account-service/internal/app/network"
+import "service-account/internal/app"
 
 func main() {
-	// init network handlers.
-	network.InitHandlers()
+	// init transport handler.
+	app.Run()
 }

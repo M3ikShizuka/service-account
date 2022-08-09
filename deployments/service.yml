@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  service-account:
+    depends_on:
+      - db-postgresql-account-service
+    build:
+      # Build can be either specified as a single string defining a context path, or as a detailed build definition.
+      # In the former case, the whole path is used as a Docker context to execute a docker build, looking for a canonical Dockerfile at context root.
+      # From <https://docs.docker.com/compose/compose-file/build/> 
+      context: ${ProjectWorkDir_Service_Account}
+    container_name: account-service
+    hostname: host-account-service
+    networks:
+      - microservices-transport
+    ports:
+      - 8080:8080
+      - 443:443
+    environment:
+      - PGUSER=${SERVICE_ACCOUNT_PGUSER:? Account-service SERVICE_ACCOUNT_PGUSER isn't set!}
+      - PGPASSWORD=${SERVICE_ACCOUNT_PGPASSWORD:? Account-service SERVICE_ACCOUNT_PGPASSWORD isn't set!}
+      - PGHOST=${SERVICE_ACCOUNT_PGHOST:? Account-service SERVICE_ACCOUNT_PGHOST isn't set!}
+      - PGPORT=${SERVICE_ACCOUNT_PGPORT:? Account-service SERVICE_ACCOUNT_PGPORT isn't set!}
+      - PGDATABASE=${SERVICE_ACCOUNT_PGDATABASE:? Account-service SERVICE_ACCOUNT_PGDATABASE isn't set!}
+    # deploy:
+    #   restart_policy:
+    #     condition: on-failure
+    volumes:
+      - type: bind
+        source: ${ProjectWorkDir_Service_Account}/tmp/logs
+        target: /var/log/service-account/logs:

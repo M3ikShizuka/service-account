@@ -17,6 +17,7 @@ RUN go build -o /service-account ./cmd/service-account/main.go
 FROM golang:1.18-alpine
 WORKDIR /
 COPY --from=build /service-account /service-account
+COPY ./web/template ./web/template
 EXPOSE 8080
 # USER nonroot:nonroot
 ENTRYPOINT [ "/service-account" ]

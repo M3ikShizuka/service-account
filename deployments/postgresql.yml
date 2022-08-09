@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  db-postgresql-account-service:
+    image: postgres:latest
+    restart: always
+    container_name: db-postgresql-account-service
+    hostname: host-db-postgresql-account-service
+    networks:
+      - microservices-transport
+    ports:
+      - ${SERVICE_ACCOUNT_POSTGRES_DB_PORT}:${SERVICE_ACCOUNT_POSTGRES_DB_PORT}
+    volumes:
+      - volume-db-postgresql-account-service:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_INITDB_ARGS=${SERVICE_ACCOUNT_POSTGRES_INITDB_ARGS:-}
+      - POSTGRES_PASSWORD=${SERVICE_ACCOUNT_POSTGRES_PASSWORD:?Account-service postgress password isn't set!}
+      - POSTGRES_USER=${SERVICE_ACCOUNT_POSTGRES_USER:?Account-service postgress user isn't set!}
+      - POSTGRES_DB=${SERVICE_ACCOUNT_POSTGRES_DB:?Account-service postgress DB name isn't set!}
+      - PGDATA=${SERVICE_ACCOUNT_PGDATA:-/var/lib/postgresql/data/pgdata}
+    command: -p ${SERVICE_ACCOUNT_POSTGRES_DB_PORT}
+
+volumes:
+  volume-db-postgresql-account-service:
