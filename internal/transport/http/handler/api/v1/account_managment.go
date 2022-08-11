@@ -5,6 +5,8 @@ import (
 	"net/http"
 )
 
+// TODO: Refactor.
+
 type User struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
@@ -13,11 +15,6 @@ type User struct {
 const (
 	pathUser string = "/user"
 )
-
-func (handler *HandlerAPIv1) initHandlersAccountManagment(router *gin.RouterGroup) {
-	router.GET(pathUser, handlerUserGet)
-	router.POST(pathUser, handlerUserPost)
-}
 
 func handlerUserGet(context *gin.Context) {
 	// !!! Call busines logic func() which return data. !!!

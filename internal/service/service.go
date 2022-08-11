@@ -1,13 +1,20 @@
 package service
 
-import "service-account/internal/service/authz/oauth2"
+import (
+	"service-account/internal/config"
+	"service-account/internal/service/authz/oauth2"
+)
 
 type Services struct {
-	OAuth2 *oauth2.OAuth2Handler
+	Config *config.Config
+	OAuth2 *oauth2.HandlerOAuth2 // AuthZ
+	// TODO: AuthN  *authn.AuthNHandler   // AuthN
 }
 
-func NewService(config *Config) *Services {
+func NewService(cfg *config.Config) *Services {
 	return &Services{
-		OAuth2: oauth2.NewOAuth2Handler(config),
+		Config: cfg,
+		OAuth2: oauth2.NewOAuth2Handler(&cfg.OAuth2),
+		// TODO: AuthN
 	}
 }

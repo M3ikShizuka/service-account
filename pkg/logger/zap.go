@@ -5,9 +5,9 @@ import (
 	"os"
 	"time"
 
-	zap "go.uber.org/zap"
+	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	lumberjack "gopkg.in/natefinch/lumberjack.v2"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 type Logger struct {
@@ -236,10 +236,8 @@ func (logger *Logger) Sync() error {
 	return logger.logger.Sync()
 }
 
-func Sync() error {
+func Sync() {
 	if std != nil {
-		return std.Sync()
+		_ = std.Sync()
 	}
-
-	return nil
 }

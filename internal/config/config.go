@@ -12,11 +12,11 @@ const (
 )
 
 type Config struct {
-	HTTP   ConfigHTTP   `mapstructure:"http"`
-	OAuth2 ConfigOAuth2 `mapstructure:"oauth2"`
+	HTTP   HTTPConfig   `mapstructure:"http"`
+	OAuth2 OAuth2Config `mapstructure:"oauth2"`
 }
 
-type ConfigHTTP struct {
+type HTTPConfig struct {
 	Proto   string `mapstructure:"proto" validate:"required"`
 	Addr    string `mapstructure:"addr" validate:"required"`
 	Port    int32  `mapstructure:"port" validate:"required"`
@@ -24,7 +24,7 @@ type ConfigHTTP struct {
 	HostURL string
 }
 
-type ConfigOAuth2 struct {
+type OAuth2Config struct {
 	ClientID        string `mapstructure:"client_id" validate:"required"`
 	ClientSecret    string `mapstructure:"client_secret" validate:"required"`
 	HydraProto      string `mapstructure:"hydra_proto" validate:"required"`

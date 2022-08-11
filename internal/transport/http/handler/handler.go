@@ -16,26 +16,26 @@ func NewHandler(services *service.Services) *Handler {
 	}
 }
 
-func (handler *Handler) Init() *gin.Engine {
+func (h *Handler) Init() *gin.Engine {
 	router := gin.Default()
 	// Init HTML Glob
-	handler.initHTMLGlob(router)
+	h.initHTMLGlob(router)
 	// Init general routes.
-	handler.initGeneralRoutes(router)
+	h.initGeneralRoutes(router)
 	// Init API
-	handler.initAPI(router)
+	h.initAPI(router)
 
 	return router
 }
 
-func (handler *Handler) initHTMLGlob(router *gin.Engine) {
+func (h *Handler) initHTMLGlob(router *gin.Engine) {
 	// template: https://gin-gonic.com/docs/examples/html-rendering/
 	router.LoadHTMLGlob("./web/template/*")
 }
 
-func (handler *Handler) initAPI(router *gin.Engine) {
-	// Init API v1 handler.
-	handlersV1 := v1.NewHandlerAPIv1(handler.services)
+func (h *Handler) initAPI(router *gin.Engine) {
+	// Init API v1 h.
+	handlersV1 := v1.NewHandlerAPIv1(h.services)
 	api := router.Group("/api")
 	{
 		handlersV1.Init(api)

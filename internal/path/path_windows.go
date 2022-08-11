@@ -1,10 +1,9 @@
 //go:build windows
-// +build windows
 
 package path
 
 var (
-	logsDir string = "tmp\\logs"
+	logsDir = "tmp\\logs"
 )
 
 func GetLogsDir() string {

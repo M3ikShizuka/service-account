@@ -84,14 +84,14 @@ func Run() {
 	<-doneChan
 	logger.Info("Services stopped")
 
-	context, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer func() {
 		// Extra handling here.
 		// Close database, redis, truncate message queues, etc.
 		cancel()
 	}()
 
-	if err := serverHttp.Stop(context); err != nil {
+	if err := serverHttp.Stop(ctx); err != nil {
 		logger.Fatal("Services shutdown failed",
 			logger.NamedError("error", err),
 		)
