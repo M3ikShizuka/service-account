@@ -46,7 +46,6 @@ func NewConfig() *Config {
 }
 
 func (config *Config) Init(configPath string) error {
-	// TODO: init config from file.
 	// Set default values.
 	config.setDefault()
 
@@ -97,7 +96,6 @@ func (config *Config) unmarshal() error {
 }
 
 func (config *Config) initСompositeFields() {
-	// TODO: init Server struct from config.
 	config.HTTP.Host = fmt.Sprintf("%s:%d", config.HTTP.Addr, config.HTTP.Port)
 	config.HTTP.HostURL = fmt.Sprintf("%s://%s", config.HTTP.Proto, config.HTTP.Host)
 

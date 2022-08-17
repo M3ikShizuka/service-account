@@ -1,4 +1,4 @@
-package v1
+package handler
 
 // Example: https://github.com/ory/hydra-consent-app-go/blob/master/main.go
 
@@ -8,7 +8,7 @@ import (
 	"service-account/internal/transport/http/response"
 )
 
-func (h *HandlerAPIv1) handlerLoginGet(context *gin.Context) {
+func (h *Handler) loginGet(context *gin.Context) {
 	// Login sessions, prompt, max_age, id_token_hint
 	// https://<hydra-public>:4444/oauth2/auth?prompt=login&max_age=60&id_token_hint=...'
 	// SRC: https://www.ory.sh/docs/hydra/concepts/login#login-sessions-prompt-max_age-id_token_hint
@@ -18,7 +18,7 @@ func (h *HandlerAPIv1) handlerLoginGet(context *gin.Context) {
 	// code 200
 	challenge := context.Query("login_challenge")
 	if challenge == "" {
-		response.AbortMessage(context, http.StatusBadRequest, "handlerLoginGet(): Expected a login challenge to be set but received none.")
+		response.AbortMessage(context, http.StatusBadRequest, "loginGet(): Expected a login challenge to be set but received none.")
 		return
 	}
 
@@ -46,6 +46,7 @@ func (h *HandlerAPIv1) handlerLoginGet(context *gin.Context) {
 		}
 
 		context.Redirect(http.StatusFound, RedirectTo)
+		return
 	}
 
 	// Render login html.
@@ -59,13 +60,13 @@ func (h *HandlerAPIv1) handlerLoginGet(context *gin.Context) {
 		})
 }
 
-func (h *HandlerAPIv1) handlerLoginPost(context *gin.Context) {
+func (h *Handler) loginPost(context *gin.Context) {
 	// Check authN data
 	// redirect to hydra public :4444/ouath2/auth
 	// Code 302
 	challenge := context.PostForm("challenge")
 	if challenge == "" {
-		response.AbortMessage(context, http.StatusBadRequest, "handlerLoginPost(): Expected a login challenge to be set but received none.")
+		response.AbortMessage(context, http.StatusBadRequest, "loginPost(): Expected a login challenge to be set but received none.")
 		return
 	}
 
@@ -80,6 +81,7 @@ func (h *HandlerAPIv1) handlerLoginPost(context *gin.Context) {
 		}
 
 		context.Redirect(http.StatusFound, redirectTo)
+		return
 	} else if submit != submitLogIn {
 		response.AbortMessage(context, http.StatusBadRequest, "Unexpected submit!")
 		return

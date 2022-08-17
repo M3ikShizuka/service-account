@@ -56,6 +56,10 @@ func Run() {
 		return
 	}
 
+	logger.Info("Service config",
+		logger.Any("cfg", serviceConfig),
+	)
+
 	// Init dependencies.
 	services := service.NewService(serviceConfig)
 

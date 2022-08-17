@@ -7,7 +7,7 @@ services:
     container_name: db-postgresql-account-service
     hostname: host-db-postgresql-account-service
     networks:
-      - microservices-transport
+      - microservices-network
     ports:
       - ${SERVICE_ACCOUNT_POSTGRES_DB_PORT}:${SERVICE_ACCOUNT_POSTGRES_DB_PORT}
     volumes:

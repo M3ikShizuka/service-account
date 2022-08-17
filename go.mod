@@ -4,7 +4,9 @@ go 1.18
 
 require (
 	github.com/gin-gonic/gin v1.8.1
+	github.com/go-playground/assert/v2 v2.0.1
 	github.com/go-playground/validator/v10 v10.10.0
+	github.com/golang/mock v1.6.0
 	github.com/ory/hydra-client-go v1.11.8
 	github.com/ory/viper v1.7.5
 	github.com/ory/x v0.0.450

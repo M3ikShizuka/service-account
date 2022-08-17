@@ -2,7 +2,7 @@ package oauth2
 
 import "golang.org/x/net/context"
 
-func (h *HandlerOAuth2) RejectLogoutRequest(context context.Context, challenge string) error {
+func (h *OAuth2Service) RejectLogoutRequest(context context.Context, challenge string) error {
 	request := h.hydra.AdminApi.RejectLogoutRequest(context)
 	request = request.LogoutChallenge(challenge)
 	_, err := request.Execute()
@@ -14,7 +14,7 @@ func (h *HandlerOAuth2) RejectLogoutRequest(context context.Context, challenge s
 	return nil
 }
 
-func (h *HandlerOAuth2) AcceptLogoutRequest(context context.Context, challenge string) (string, error) {
+func (h *OAuth2Service) AcceptLogoutRequest(context context.Context, challenge string) (string, error) {
 	requestAcceptLogout := h.hydra.AdminApi.AcceptLogoutRequest(context)
 	requestAcceptLogout = requestAcceptLogout.LogoutChallenge(challenge)
 	completedRequest, _, errAcceptLogout := requestAcceptLogout.Execute()

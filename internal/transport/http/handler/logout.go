@@ -1,4 +1,4 @@
-package v1
+package handler
 
 import (
 	"github.com/gin-gonic/gin"
@@ -7,7 +7,7 @@ import (
 	"service-account/internal/transport/http/response"
 )
 
-func (h *HandlerAPIv1) handlerLogoutGet(context *gin.Context) {
+func (h *Handler) logoutGet(context *gin.Context) {
 	challenge := context.Query("logout_challenge")
 	if challenge == "" {
 		response.AbortMessage(context, http.StatusBadRequest, "handlerLogoutGet(): Expected a logout challenge to be set but received none.")
@@ -23,7 +23,7 @@ func (h *HandlerAPIv1) handlerLogoutGet(context *gin.Context) {
 	})
 }
 
-func (h *HandlerAPIv1) handlerLogoutPost(context *gin.Context) {
+func (h *Handler) logoutPost(context *gin.Context) {
 	challenge := context.PostForm("challenge")
 	if challenge == "" {
 		response.AbortMessage(context, http.StatusBadRequest, "handlerLogoutPost(): Expected a logout challenge to be set but received none.")
@@ -42,6 +42,7 @@ func (h *HandlerAPIv1) handlerLogoutPost(context *gin.Context) {
 
 		// Redirect to main page.
 		context.Redirect(http.StatusOK, pathRoot)
+		return
 	} else if submit != submitYes {
 		response.AbortMessage(context, http.StatusBadRequest, "Unexpected submit!")
 		return
@@ -57,11 +58,11 @@ func (h *HandlerAPIv1) handlerLogoutPost(context *gin.Context) {
 	context.Redirect(http.StatusFound, redirectTo)
 }
 
-func (h *HandlerAPIv1) handlerLogoutBackchannel(context *gin.Context) {
+func (h *Handler) logoutBackchannel(context *gin.Context) {
 
 }
 
-func (h *HandlerAPIv1) handlerLogoutFrontchannel(context *gin.Context) {
+func (h *Handler) logoutFrontchannel(context *gin.Context) {
 	//var accessToken, _ = GetCookieValue(context.Request, "access_token")
 	//var accessTokenExpiresIn, _ = GetCookieValue(context.Request, "access_token_expires_in")
 	//var refreshToken, _ = GetCookieValue(context.Request, "refresh_token")

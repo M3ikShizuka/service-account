@@ -3,13 +3,10 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"service-account/internal/service/authz/oauth2"
 	"service-account/internal/transport/http/coockie"
 	"service-account/internal/transport/http/response"
 	"service-account/pkg/logger"
 )
-
-const pathRoot = "/"
 
 func (h *Handler) initGeneralRoutes(router *gin.Engine) {
 	// Main/Home page
@@ -36,11 +33,11 @@ func (h *Handler) rootGet(context *gin.Context) {
 		}
 
 		isAuth = tokenIntrospection.Active
-		if isAuth == true {
+		if isAuth {
 			// Get OpenID Token.
 			var idToken, err = coockie.GetValue(context.Request, "id_token")
 			if err == nil {
-				logoutUrl := oauth2.GenerateLogoutURL(h.services.OAuth2.LogoutUrlTemplate, idToken, "", "")
+				logoutUrl := h.services.OAuth2.GenerateLogoutURL(idToken, "", "")
 
 				// Token is valid.
 				// Render home html with auth info.
@@ -62,7 +59,7 @@ func (h *Handler) rootGet(context *gin.Context) {
 	// Render home html with auth url.
 	context.HTML(http.StatusOK, "index.html", gin.H{
 		"isAuth": isAuth,
-		"URL":    h.services.OAuth2.AuthCodeUrl,
+		"URL":    h.services.OAuth2.GetAuthCodeUrl(),
 	})
 }
 

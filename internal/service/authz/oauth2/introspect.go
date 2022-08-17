@@ -5,7 +5,7 @@ import (
 	"service-account/internal/domain"
 )
 
-func (h *HandlerOAuth2) IntrospectOAuth2Token(context context.Context, accessToken string) (*domain.OA2TokenIntrospection, error) {
+func (h *OAuth2Service) IntrospectOAuth2Token(context context.Context, accessToken string) (*domain.OA2TokenIntrospection, error) {
 	requestIntrospectToken := h.hydra.AdminApi.IntrospectOAuth2Token(context)
 	requestIntrospectToken = requestIntrospectToken.Token(accessToken)
 	tokenIntrospection, _, err := requestIntrospectToken.Execute()

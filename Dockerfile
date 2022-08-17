@@ -15,9 +15,10 @@ RUN go build -o /service-account ./cmd/service-account/main.go
 ## Deploy
 ##
 FROM golang:1.18-alpine
-WORKDIR /
-COPY --from=build /service-account /service-account
+WORKDIR /app
+COPY --from=build /service-account /app/service-account
+COPY ./configs ./configs
 COPY ./web/template ./web/template
-EXPOSE 8080
+EXPOSE 3000
 # USER nonroot:nonroot
-ENTRYPOINT [ "/service-account" ]
+ENTRYPOINT [ "./service-account" ]

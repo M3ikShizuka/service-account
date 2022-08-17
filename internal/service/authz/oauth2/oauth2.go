@@ -12,35 +12,16 @@ import (
 	"strconv"
 )
 
-type HandlerOAuth2 struct {
+type OAuth2Service struct {
 	hydra      *client.APIClient
 	confOAuth2 oauth2.Config
 
 	AuthCodeUrl       string
 	AuthState         []rune // i think it's should be generated on client app side.
-	LogoutUrlTemplate string
+	logoutUrlTemplate string
 }
 
-func (h *HandlerOAuth2) TokenExchange(ctx context.Context, code string) (*domain.Token, error) {
-	token, err := h.confOAuth2.Exchange(ctx, code)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrive OpenID token.
-	idt := token.Extra("id_token")
-	IdToken := idt.(string)
-
-	return &domain.Token{
-		AccessToken:  token.AccessToken,
-		TokenType:    token.TokenType,
-		RefreshToken: token.RefreshToken,
-		Expiry:       token.Expiry,
-		IdToken:      IdToken,
-	}, nil
-}
-
-func NewOAuth2Handler(config *config.OAuth2Config) *HandlerOAuth2 {
+func NewOAuth2Service(config *config.OAuth2Config) *OAuth2Service {
 	// Init OAuth config.
 	scopes := []string{"openid", "offline"}
 
@@ -62,7 +43,7 @@ func NewOAuth2Handler(config *config.OAuth2Config) *HandlerOAuth2 {
 		Scopes:      scopes,
 	}
 
-	handlerOA2 := &HandlerOAuth2{
+	handlerOA2 := &OAuth2Service{
 		hydra:      client.NewAPIClient(configuration),
 		confOAuth2: confOAuth2,
 	}
@@ -74,12 +55,31 @@ func NewOAuth2Handler(config *config.OAuth2Config) *HandlerOAuth2 {
 
 	handlerOA2.AuthCodeUrl = authCodeUrl
 	handlerOA2.AuthState = authState
-	handlerOA2.LogoutUrlTemplate = logoutUrlTemplate
+	handlerOA2.logoutUrlTemplate = logoutUrlTemplate
 
 	return handlerOA2
 }
 
-func (h *HandlerOAuth2) generateAuthCodeURL() (string, []rune) {
+func (h *OAuth2Service) TokenExchange(ctx context.Context, code string) (*domain.Token, error) {
+	token, err := h.confOAuth2.Exchange(ctx, code)
+	if err != nil {
+		return nil, err
+	}
+
+	// Retrive OpenID token.
+	idt := token.Extra("id_token")
+	IdToken := idt.(string)
+
+	return &domain.Token{
+		AccessToken:  token.AccessToken,
+		TokenType:    token.TokenType,
+		RefreshToken: token.RefreshToken,
+		Expiry:       token.Expiry,
+		IdToken:      IdToken,
+	}, nil
+}
+
+func (h *OAuth2Service) generateAuthCodeURL() (string, []rune) {
 	state, err := randx.RuneSequence(24, randx.AlphaLower)
 	if err != nil {
 		log.Fatal(err)
@@ -103,6 +103,10 @@ func generateLogoutURLTemplate(hydraPublicURL string) string {
 	return fmt.Sprintf("%s%s?id_token_hint=%%s&state=%%s&post_logout_redirect_uri=%%s", hydraPublicURL, "/oauth2/sessions/logout")
 }
 
-func GenerateLogoutURL(logoutUrlTemplate string, idTokenHint string, state string, postLogoutRedirectUri string) string {
-	return fmt.Sprintf(logoutUrlTemplate, idTokenHint, state, postLogoutRedirectUri)
+func (h *OAuth2Service) GenerateLogoutURL(idTokenHint string, state string, postLogoutRedirectUri string) string {
+	return fmt.Sprintf(h.logoutUrlTemplate, idTokenHint, state, postLogoutRedirectUri)
+}
+
+func (h *OAuth2Service) GetAuthCodeUrl() string {
+	return h.AuthCodeUrl
 }

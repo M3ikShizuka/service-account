@@ -1,6 +1,7 @@
-package v1
+package handler
 
 import (
+	"encoding/json"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"service-account/internal/transport/http/response"
@@ -8,7 +9,7 @@ import (
 	"time"
 )
 
-func (h *HandlerAPIv1) handlerConsentGet(context *gin.Context) {
+func (h *Handler) consentGet(context *gin.Context) {
 	challenge := context.Query("consent_challenge")
 	if challenge == "" {
 		response.AbortMessage(context, http.StatusBadRequest, "handlerConsentGet(): Expected a consent challenge to be set but received none.")
@@ -54,7 +55,13 @@ func (h *HandlerAPIv1) handlerConsentGet(context *gin.Context) {
 		}
 
 		context.Redirect(http.StatusFound, redirectTo)
+		return
 	}
+
+	// Declared an empty map interface
+	var clientData map[string]interface{}
+	// Unmarshal or Decode the JSON to the interface.
+	json.Unmarshal(getConsentData.ClientData, &clientData)
 
 	// Render consent html.
 	// TODO: csrfToken for forms.
@@ -66,12 +73,12 @@ func (h *HandlerAPIv1) handlerConsentGet(context *gin.Context) {
 			// and what additional data you have available.
 			"requested_scope": getConsentData.RequestedScope,
 			"user":            getConsentData.Subject,
-			"client":          getConsentData.ClientData,
+			"client":          clientData,
 			"action":          "/consent",
 		})
 }
 
-func (h *HandlerAPIv1) handlerConsentPost(context *gin.Context) {
+func (h *Handler) consentPost(context *gin.Context) {
 	challenge := context.PostForm("challenge")
 	if challenge == "" {
 		response.AbortMessage(context, http.StatusBadRequest, "handlerConsentPost(): Expected a consent challenge to be set but received none.")
@@ -88,6 +95,7 @@ func (h *HandlerAPIv1) handlerConsentPost(context *gin.Context) {
 		}
 
 		context.Redirect(http.StatusFound, redirectTo)
+		return
 	} else if submit != submitAllowAccess {
 		response.AbortMessage(context, http.StatusBadRequest, "Unexpected submit!")
 		return
@@ -118,7 +126,7 @@ func (h *HandlerAPIv1) handlerConsentPost(context *gin.Context) {
 	context.Redirect(http.StatusFound, redirectTo)
 }
 
-func (h *HandlerAPIv1) handlerCallback(context *gin.Context) {
+func (h *Handler) callback(context *gin.Context) {
 	errorParam := context.Query("error")
 	if errorParam != "" {
 		logger.Error("handlerCallback() - query got error",

@@ -6,7 +6,7 @@ import (
 	"service-account/internal/domain"
 )
 
-func (h *HandlerOAuth2) GetLoginRequest(context context.Context, challenge string) (*domain.OA2LoginRequest, error) {
+func (h *OAuth2Service) GetLoginRequest(context context.Context, challenge string) (*domain.OA2LoginRequest, error) {
 	/*
 		GET http://127.0.0.1:4445/oauth2/auth/requests/login
 		Status = {string} "200 OK"
@@ -37,7 +37,7 @@ func (h *HandlerOAuth2) GetLoginRequest(context context.Context, challenge strin
 		nil
 }
 
-func (h *HandlerOAuth2) AcceptLoginRequest(context context.Context, challenge string, subject string, remember bool, rememberFor int64) (string, error) {
+func (h *OAuth2Service) AcceptLoginRequest(context context.Context, challenge string, subject string, remember bool, rememberFor int64) (string, error) {
 	var acceptLoginRequest client.AcceptLoginRequest
 	acceptLoginRequest.SetSubject(subject)
 	acceptLoginRequest.SetRemember(remember)
@@ -89,7 +89,7 @@ func (h *HandlerOAuth2) AcceptLoginRequest(context context.Context, challenge st
 	return completedRequest.RedirectTo, nil
 }
 
-func (h *HandlerOAuth2) RejectLoginRequest(context context.Context, challenge string, errStr string, errDescStr string) (string, error) {
+func (h *OAuth2Service) RejectLoginRequest(context context.Context, challenge string, errStr string, errDescStr string) (string, error) {
 	/*
 		type AdminApiApiRejectLoginRequestRequest struct {
 			ctx context.Context

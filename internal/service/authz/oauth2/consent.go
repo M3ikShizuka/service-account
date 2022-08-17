@@ -6,7 +6,7 @@ import (
 	"service-account/internal/domain"
 )
 
-func (h *HandlerOAuth2) GetConsentRequest(context context.Context, challenge string) (*domain.OA2ConsentRequest, error) {
+func (h *OAuth2Service) GetConsentRequest(context context.Context, challenge string) (*domain.OA2ConsentRequest, error) {
 	// Get consent request.
 	requestGetConsent := h.hydra.AdminApi.GetConsentRequest(context)
 	requestGetConsent = requestGetConsent.ConsentChallenge(challenge)
@@ -29,7 +29,7 @@ func (h *HandlerOAuth2) GetConsentRequest(context context.Context, challenge str
 		nil
 }
 
-func (h *HandlerOAuth2) AcceptConsentRequest(context context.Context, challenge string, grantScope []string, grantAccessTokenAudience []string, remember bool, rememberFor int64) (string, error) {
+func (h *OAuth2Service) AcceptConsentRequest(context context.Context, challenge string, grantScope []string, grantAccessTokenAudience []string, remember bool, rememberFor int64) (string, error) {
 	//// The session allows us to set session data for id and access tokens
 	//let session: ConsentRequestSession = {
 	//	// This data will be available when introspecting the token. Try to avoid sensitive information here,
@@ -106,7 +106,7 @@ func (h *HandlerOAuth2) AcceptConsentRequest(context context.Context, challenge 
 	return completedRequest.RedirectTo, nil
 }
 
-func (h *HandlerOAuth2) RejectConsentRequest(context context.Context, challenge string, errStr string, errDescStr string) (string, error) {
+func (h *OAuth2Service) RejectConsentRequest(context context.Context, challenge string, errStr string, errDescStr string) (string, error) {
 	var rejectRequest client.RejectRequest
 	rejectRequest.SetError(errStr)
 	rejectRequest.SetErrorDescription(errDescStr)

@@ -12,9 +12,9 @@ services:
     container_name: account-service
     hostname: host-account-service
     networks:
-      - microservices-transport
+      - microservices-network
     ports:
-      - 8080:8080
+      - 3000:3000
       - 443:443
     environment:
       - PGUSER=${SERVICE_ACCOUNT_PGUSER:? Account-service SERVICE_ACCOUNT_PGUSER isn't set!}
@@ -28,4 +28,4 @@ services:
     volumes:
       - type: bind
         source: ${ProjectWorkDir_Service_Account}/tmp/logs
-        target: /var/log/service-account/logs:
+        target: "/var/log/service-account/logs"
