@@ -17,7 +17,7 @@ type OAuth2Service struct {
 	confOAuth2 oauth2.Config
 
 	AuthCodeUrl       string
-	AuthState         []rune // i think it's should be generated on client app side.
+	AuthState         []rune // I think it's should be generated on client app side.
 	logoutUrlTemplate string
 }
 
@@ -28,7 +28,7 @@ func NewOAuth2Service(config *config.OAuth2Config) *OAuth2Service {
 	configuration := client.NewConfiguration()
 	configuration.Servers = []client.ServerConfiguration{
 		{
-			URL: config.HydraAdminURL, // Admin API URL
+			URL: config.HydraAdminURLPrivateLan, // Admin API URL
 		},
 	}
 
@@ -39,7 +39,7 @@ func NewOAuth2Service(config *config.OAuth2Config) *OAuth2Service {
 			TokenURL: config.Backend,
 			AuthURL:  config.Frontend,
 		},
-		RedirectURL: config.RedirectUrl,
+		RedirectURL: config.RedirectURLCallback,
 		Scopes:      scopes,
 	}
 

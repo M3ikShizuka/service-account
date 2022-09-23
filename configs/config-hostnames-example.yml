@@ -7,6 +7,7 @@ oauth2:
   client_secret: "client-secret-service-account"
   hydra_proto: "http"
   hydra_public_host: "http://public.hydra.localhost" # Here have be hydra's external hostname. Client device does request to here.
-  hydra_public_host_private_lan: "http://chart-hydra1-public.default.svc.cluster.local:4444" # Here have be hydra's external hostname. Microservices do request to here.
-  hydra_admin_host_private_lan: "http://chart-hydra1-admin.default.svc.cluster.local:4445" # Here have be hydra's kube object hostname. Microservices do request to here.
+  hydra_public_port: 80 # Client device does request to here. Ingress will redirect it to container port.
+  hydra_admin_host: "http://chart-hydra1-admin.default.svc.cluster.local" # Here have be hydra's kube object hostname. Microservices do request to here.
+  hydra_admin_port: 4445 # Microservices do request to here in kube lan.
   redirect_addr: "account.localhost"

@@ -1,0 +1,179 @@
+include scripts/Makefile.variable
+
+###########################################
+# Fast run
+###########################################
+k8s-kind-fast: k8s-kind-cluster-delete k8s-kind-cluster-create k8s-kind-load-image k8s-helm-install
+#k8s-k3d-fast: k8s-k3d-cluster-delete k8s-k3d-cluster-create k8s-k3d-load-image k8s-helm-install
+
+###########################################
+# Helm
+###########################################
+k8s-helm-install: k8s-helm-install-loadbalancer
+
+k8s-helm-install-loadbalancer:
+	## Substitute environment variables
+	$(MAKE) k8s-helm-secrets-envsubst
+		
+	## Load balancer
+	#helm install metallb metallb/metallb -f ${metallb-configmap-path}
+	
+	## Create namespace
+	# kubectl create ns ingress-nginx
+
+	## Ingress
+	# helm install nginx-ingress nginx-stable/nginx-ingress --namespace ingress-nginx
+	# kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+	# kubectl wait --namespace ingress-nginx \
+	# --for=condition=ready pod \
+	# --selector=app.kubernetes.io/component=controller \
+	# --timeout=90s
+
+	helm install ${helm-ingress-nginx-chart-name} ${helm-chart-ingress-nginx}
+
+	# Wait ingress-nginx
+	kubectl wait --namespace ingress-nginx \
+		--for=condition=ready pod \
+		--selector=app.kubernetes.io/component=controller \
+		--timeout=90s
+
+	$(MAKE) k8s-helm-install-microservice-only
+
+k8s-helm-install-microservice-only:
+	## service-account database
+	helm install \
+		${helm-service-account-database-chart-name} \
+		${helm-chart-service-account-db-postgresql-dir} \
+	 	--set persistence.existingClaim=service-account-postgresql-pv-claim \
+		--set volumePermissions.enabled=true \
+		-f ${helm-chart-service-account-db-postgresql-dir}/.secret-values/values.yaml
+
+	## service-account
+	helm install ${helm-account-service-chart-name} ${helm-chart-service-account-dir}
+
+# don't work. will error createcontainerconfigerror. secret.yaml should be in templates folder.
+#-f ${helm-chart-service-account-dir}/secrets/secrets.yaml
+
+k8s-helm-install-nodeport:
+	helm install ${helm-account-service-chart-name} ${helm-chart-service-account-dir}
+
+k8s-helm-delete:
+	## service-account
+	$(MAKE) k8s-helm-delete-microservice-only
+
+	## Ingress
+	# kubectl delete -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+	# helm uninstall nginx-ingress --namespace ingress-nginx
+	helm uninstall ${helm-ingress-nginx-chart-name}
+
+	## Delete namespace
+	kubectl delete ns ingress-nginx
+	
+	## Load balancer
+	#helm uninstall metallb
+
+k8s-helm-delete-microservice-only:
+	## service-account
+	helm uninstall ${helm-account-service-chart-name}
+
+k8s-helm-show:
+	helm show all ${helm-chart-service-account-dir}
+
+k8s-helm-verify:
+	helm verify	${helm-chart-service-account-dir}
+
+k8s-helm-lint:
+	helm lint ${helm-chart-service-account-dir}
+
+k8s-helm-secrets-envsubst:
+	## service-account db postgresql
+	envsubst < ${helm-chart-service-account-db-postgresql-dir}/deploy-config/values.yaml > ${helm-chart-service-account-db-postgresql-dir}/.secret-values/values.yaml
+	## service-account
+	envsubst < ${helm-chart-service-account-dir}/deploy-config/secrets.yaml > ${helm-chart-service-account-dir}/.secret-values/secrets.yaml
+
+###########################################
+# k8s common
+###########################################
+k8s-build:
+	## Build image
+	docker build -t ${docker-full-image-sa-name} -f ${docker-image-sa-path} .
+
+k8s-build-dev:
+	## Build service-account image for debug
+	#docker build -t ${docker-full-image-sa-name} -f ${docker-image-service-account-debug-path} .
+
+k8s-run:
+	## Run via CMD
+	# kubectl run ${docker-image-sa-name} --image=${docker-full-image-sa-name} --image-pull-policy=Never
+	## Run via config.
+	kubectl apply ${kube-deploy-command}
+
+k8s-stop:
+	# kubectl delete pod ${docker-image-sa-name}
+	kubectl delete ${kube-deploy-command}
+
+k8s-describe:
+	kubectl describe ${kube-deploy-command}
+
+test:
+	# Unit tests
+	go test -v ./...
+
+###########################################
+# kind
+###########################################
+k8s-kind-cluster-create: k8s-kind-cluster-create-loadbalancer
+
+k8s-kind-cluster-create-loadbalancer:
+	### Need run by admin or there will be an error.
+	# loadbalancer
+	kind create cluster --name ${ms-cluster-name} --config ${kind-config-loadbalancer-path}
+
+k8s-kind-cluster-create-nodeport:
+	### Need run by admin or there will be an error.
+	kind create cluster --name ${ms-cluster-name} --config ${kind-config-nodeport-path}
+
+k8s-kind-cluster-delete:
+	kind delete cluster --name ${ms-cluster-name}
+
+k8s-kind-load-image:
+	## Load docker image to kind
+	kind load docker-image ${docker-full-image-sa-name} --name ${ms-cluster-name}
+
+k8s-kind-build: k8s-build k8s-kind-load-image
+
+###########################################
+# k3d
+###########################################
+k8s-k3d-cluster-create:
+	# k3d cluster create ${ms-cluster-name}
+	## Load balancer
+	# k3d cluster create ${ms-cluster-name} --api-port 6550 -p "3000:3000@loadbalancer" --agents 2
+	## NodePort
+	## WARNING k3d NodePort don't work!!!
+	echo Hm, k3d with NodePort doesn't work for me. But kind is work!
+	k3d cluster create ${ms-cluster-name} -p "3002:31000@server:0" -p "3000:31000@agent:0" -p "3001:31000@agent:1" --agents 2
+	#export KUBECONFIG="$(k3d kubeconfig write k3s-default)"
+
+k8s-k3d-cluster-delete:
+	k3d cluster delete ${ms-cluster-name}
+
+k8s-k3d-load-image:
+	k3d image import ${docker-full-image-sa-name} -c ${ms-cluster-name}
+
+k8s-k3d-build: k8s-build k8s-k3d-load-image
+
+###########################################
+# minikube
+###########################################
+k8s-build-minikube:
+	### For minikube
+	## Set docker env
+	# unix shells
+	#eval $(minikube docker-env)
+	# PowerShell
+	#minikube -p minikube docker-env --shell powershell | Invoke-Expression
+	# CMD
+	#@FOR /f "tokens=*" %i IN ('minikube -p minikube docker-env --shell cmd') DO @%i
+
+	k8s-build

@@ -41,7 +41,7 @@ func (h *Handler) logoutPost(context *gin.Context) {
 		}
 
 		// Redirect to main page.
-		context.Redirect(http.StatusOK, pathRoot)
+		context.Redirect(http.StatusFound, pathRoot)
 		return
 	} else if submit != submitYes {
 		response.AbortMessage(context, http.StatusBadRequest, "Unexpected submit!")

@@ -12,7 +12,7 @@ func (h *OAuth2Service) GetLoginRequest(context context.Context, challenge strin
 		Status = {string} "200 OK"
 		StatusCode = {int} 200
 		Proto = {string} "HTTP/1.1"
-		{"challenge":"5abbeb3853264c36993da5b2a1468ad7","requested_scope":["openid","offline"],"requested_access_token_audience":[],"skip":false,"subject":"","oidc_context":{},"client":{"client_id":"auth-code-client","client_name":"","redirect_uris":["http://127.0.0.1:5555/callback"],"grant_types":["authorization_code","refresh_token"],"response_types":["code","id_token"],"scope":"openid offline","audience":[],"owner":"","policy_uri":"","allowed_cors_origins":[],"tos_uri":"","client_uri":"","logo_uri":"","contacts":[],"client_secret_expires_at":0,"subject_type":"public","jwks":{},"token_endpoint_auth_method":"client_secret_basic","userinfo_signed_response_alg":"none","created_at":"2022-07-28T15:43:17Z","updated_at":"2022-07-28T15:43:17.303143Z","metadata":{}},"request_url":"http://127.0.0.1:4444/oauth2/auth?client_id=auth-code-client\u0026max_age=0\u0026nonce=eqemnkccxrwxyripqscbhagw\u0026redirect_uri=http%3A%2F%2F127.0.0.1%3A3000%2Fcallback\u0026response_type=code\u0026scope=openid+offline\u0026state=evgfgsnclrwvoumhuqhbazkq","session_id":"76830b22-bf47-4162-9635-0b211ffb030e"}
+		{"challenge":"5abbeb3853264c36993da5b2a1468ad7","requested_scope":["openid","offline"],"requested_access_token_audience":[],"skip":false,"subject":"","oidc_context":{},"client":{"client_id":"client-auth-code-service-account","client_name":"","redirect_uris":["http://127.0.0.1:5555/callback"],"grant_types":["authorization_code","refresh_token"],"response_types":["code","id_token"],"scope":"openid offline","audience":[],"owner":"","policy_uri":"","allowed_cors_origins":[],"tos_uri":"","client_uri":"","logo_uri":"","contacts":[],"client_secret_expires_at":0,"subject_type":"public","jwks":{},"token_endpoint_auth_method":"client_secret_basic","userinfo_signed_response_alg":"none","created_at":"2022-07-28T15:43:17Z","updated_at":"2022-07-28T15:43:17.303143Z","metadata":{}},"request_url":"http://127.0.0.1:4444/oauth2/auth?client_id=client-auth-code-service-account\u0026max_age=0\u0026nonce=eqemnkccxrwxyripqscbhagw\u0026redirect_uri=http%3A%2F%2F127.0.0.1%3A3000%2Fcallback\u0026response_type=code\u0026scope=openid+offline\u0026state=evgfgsnclrwvoumhuqhbazkq","session_id":"76830b22-bf47-4162-9635-0b211ffb030e"}
 	*/
 	requestGetLogin := h.hydra.AdminApi.GetLoginRequest(context)
 	requestGetLogin = requestGetLogin.LoginChallenge(challenge)
@@ -73,7 +73,7 @@ func (h *OAuth2Service) AcceptLoginRequest(context context.Context, challenge st
 
 	/*
 		completedRequestAcceptLogin = {*client.CompletedRequest | 0xc00008c250}
-		 RedirectTo = {string} "http://127.0.0.1:4444/oauth2/auth?client_id=auth-code-client&login_verifier=dc6e47d889574c939ec3ace9"
+		 RedirectTo = {string} "http://127.0.0.1:4444/oauth2/auth?client_id=client-auth-code-service-account&login_verifier=dc6e47d889574c939ec3ace9"
 
 		responseAcceptLogin = {*http.Response | 0xc00041c1b0}
 		 Status = {string} "200 OK"

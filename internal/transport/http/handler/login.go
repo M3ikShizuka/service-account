@@ -29,7 +29,7 @@ func (h *Handler) loginGet(context *gin.Context) {
 		return
 	}
 
-	// If hydra was already able to authenticate the user, skip will be true and we do not need to re-authenticate
+	// If hydra was already able to authenticate the user, skip will be true, and we do not need to re-authenticate
 	// the user.
 	if loginRequestData.Skip {
 		// You can apply logic here, for example update the number of times the user logged in.

@@ -1,0 +1,54 @@
+#SRC: https://www.systutorials.com/how-to-get-the-full-path-and-directory-of-a-makefile-itself/
+#SRC: https://stackoverflow.com/a/31728689
+#SRC: https://dev.to/serhatteker/get-environment-variables-from-a-file-into-makefile-2m5l
+
+mkfile_path := $(abspath $(lastword $(MAKEFILE_LIST)))
+mkfile_dir := $(shell echo ${mkfile_path} | rev | cut -d'/' -f3- | rev)
+
+# env
+path:="$(mkfile_dir)/.env"
+SPACE:=$(null) $(null)
+pathStr:=$(subst $(SPACE),\ ,$(path))
+ENV:=$(subst ",,$(pathStr))
+# Environment variables for project
+include $(ENV)
+# Export all variable to sub-make
+export
+
+$(info .env path: $(ENV))
+$(info HYDRA_DB_POSTGRESQL_SERVICE_NAME: ${HYDRA_DB_POSTGRESQL_SERVICE_NAME})
+$(info HYDRA_PGHOST: ${HYDRA_PGHOST})
+exit
+
+docker-image-sa-name := m3ikshizuka/service-account
+docker-image-sa-version := 0.0.1
+docker-full-image-sa-name := ${docker-image-sa-name}:${docker-image-sa-version}
+docker-image-sa-path := ./build/docker/Dockerfile
+
+kube-deploy-command := -f deployments/kubernetes/microservices-network-networkpolicy.yaml \
+-f deployments/kubernetes/service-account-deployment.yaml \
+-f deployments/kubernetes/service-account-service.yaml
+
+#-f ../deployments/kubernetes/Ingress/ingress-traefik.yaml
+
+# microservice cluster name
+ms-cluster-name := cluster-service-account
+kind-config-loadbalancer-path := ../deployments/kubernetes/kind/kind-cluster-loadbalancer.yaml
+kind-config-nodeport-path := ../deployments/kubernetes/kind/kind-cluster-nodeport.yaml
+
+helm-ingress-nginx-chart-name := chart-in1
+helm-chart-ingress-nginx := ../deployments/kubernetes/helm/ingress-nginx
+helm-account-service-chart-name := chart-as1
+helm-service-account-database-chart-name := chart-service-account-postgresql
+
+ifndef HELM_CHART_SERVICE_ACCOUNT_DIR
+    $(error HELM_CHART_SERVICE_ACCOUNT_DIR is not set)
+endif
+helm-chart-service-account-dir := ${HELM_CHART_SERVICE_ACCOUNT_DIR}
+
+ifndef HELM_CHART_SERVICE_ACCOUNT_DB_POSTGRESQL_DIR
+    $(error HELM_CHART_SERVICE_ACCOUNT_DB_POSTGRESQL_DIR is not set)
+endif
+helm-chart-service-account-db-postgresql-dir := ${HELM_CHART_SERVICE_ACCOUNT_DB_POSTGRESQL_DIR}
+
+metallb-configmap-path := ./deployments/kubernetes/helm/service-account-chart/templates/config-loadbalancer.yaml

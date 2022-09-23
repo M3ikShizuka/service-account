@@ -1,3 +1,0 @@
-test:
-	# Unit tests
-	go test -v ./...

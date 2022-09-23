@@ -9,6 +9,7 @@ services:
       # In the former case, the whole path is used as a Docker context to execute a docker build, looking for a canonical Dockerfile at context root.
       # From <https://docs.docker.com/compose/compose-file/build/> 
       context: ${ProjectWorkDir_Service_Account}
+      dockerfile: ./build/docker/Dockerfile
     container_name: account-service
     hostname: host-account-service
     networks:

@@ -1,4 +1,14 @@
-##
+# Service Account
+User's account management service.
+
+## Configurations
+Change params in `configs/config.yml` file if necessary.
+
+## Libs
+* [viper](https://github.com/spf13/viper) - configuration 
+* [zap](https://github.com/uber-go/zap) - logging
+
+## Docker compose
 ### Start
 ```bash
 docker-compose -p microservice-account-service -f deployments/standalone.yml -f deployments/service.yml -f deployments/postgresql.yml up --build -d
