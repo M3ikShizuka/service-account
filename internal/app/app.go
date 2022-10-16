@@ -3,14 +3,18 @@ package app
 import (
 	"context"
 	"errors"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 	"net/http"
 	"os"
 	"os/signal"
 	"service-account/internal/config"
 	"service-account/internal/path"
+	"service-account/internal/repository"
 	"service-account/internal/service"
 	"service-account/internal/transport/http/handler"
 	"service-account/internal/transport/http/server"
+	"service-account/pkg/hash"
 	"service-account/pkg/logger"
 	"syscall"
 	"time"
@@ -60,8 +64,25 @@ func Run() {
 		logger.Any("cfg", serviceConfig),
 	)
 
+	db, err := gorm.Open(postgres.New(postgres.Config{
+		DSN: serviceConfig.DB.DSN,
+		//PreferSimpleProtocol: true, // disables implicit prepared statement usage
+	}), &gorm.Config{})
+	if err != nil {
+		logger.Error("Can't connect to database!", logger.NamedError("error", err))
+		return
+	}
+
 	// Init dependencies.
-	services := service.NewService(serviceConfig)
+	userRepo := repository.NewUsersRepo(db)
+	hasher := new(hash.HasherArgon2id)
+
+	services := service.NewService(
+		serviceConfig,
+		&service.Depends{
+			UserRepo: userRepo,
+			Hasher:   hasher,
+		})
 
 	// Init HTTP handlers.
 	handlerHttp := handler.NewHandler(services)

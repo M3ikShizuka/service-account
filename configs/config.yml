@@ -1,12 +1,23 @@
 http:
   proto: "http"
+  # "0.0.0.0"
   listen_addr: "0.0.0.0"
   port: 3000 # Microservices do request to here. kube port
 oauth2:
   client_id: "client-auth-code-service-account"
   client_secret: "client-secret-service-account"
   hydra_proto: "http"
-  hydra_public_host: "http://public.hydra.localhost" # Here have be hydra's external hostname. Client device does request to here.
-  hydra_public_host_private_lan: "http://chart-hydra1-public.default.svc.cluster.local:4444" # Here have be hydra's external hostname. Microservices do request to here.
-  hydra_admin_host_private_lan: "http://chart-hydra1-admin.default.svc.cluster.local:4445" # Here have be hydra's kube object hostname. Microservices do request to here.
-  redirect_addr: "account.localhost"
+# Here have be hydra's external hostname. Client device does request to here.
+  hydra_public_host: "http://public.hydra.localhost"
+# "http://chart-hydra1-public.default.svc.cluster.local:4444" - use in kube network. Set by .env values.
+# "http://public.hydra.localhost" - use for debug when run outside kube network.
+# Here have be hydra's external hostname. Microservices do request to here.
+  hydra_public_host_private_lan: "http://public.hydra.localhost"
+# "http://chart-hydra1-admin.default.svc.cluster.local:4445" - use in kube network. Set by .env values.
+# "http://admin.hydra.localhost" - use for debug when run outside kube network. Hydra kube configuration "ingress.admin.enabled" should equal "true" in "value.yaml" config file.
+# Here have be hydra's kube object hostname. Microservices do request to here.
+  hydra_admin_host_private_lan: "http://admin.hydra.localhost"
+# "account.localhost"
+  redirect_addr: "127.0.0.1:3000"
+database:
+  dsn: "postgres://mikhailgorbachev666:82M3TLiz7SttMrLu2bTe&@127.0.0.1:5433/db_service_account?sslmode=disable"

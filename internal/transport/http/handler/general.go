@@ -58,8 +58,9 @@ func (h *Handler) rootGet(context *gin.Context) {
 	// Token is invalid!
 	// Render home html with auth url.
 	context.HTML(http.StatusOK, "index.html", gin.H{
-		"isAuth": isAuth,
-		"URL":    h.services.OAuth2.GetAuthCodeUrl(),
+		"isAuth":    isAuth,
+		"URLsignin": h.services.OAuth2.GetAuthCodeUrl(),
+		"URLsignup": pathSignup,
 	})
 }
 

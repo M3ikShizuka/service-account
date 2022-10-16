@@ -14,6 +14,7 @@ const (
 type Config struct {
 	HTTP   HTTPConfig   `mapstructure:"http"`
 	OAuth2 OAuth2Config `mapstructure:"oauth2"`
+	DB     Database     `mapstructure:"database"`
 }
 
 type HTTPConfig struct {
@@ -39,6 +40,10 @@ type OAuth2Config struct {
 	RedirectURLCallback      string
 	Backend                  string
 	Frontend                 string
+}
+
+type Database struct {
+	DSN string `mapstructure:"dsn" validate:"required"`
 }
 
 func NewConfig() *Config {
@@ -128,6 +133,10 @@ func (config *Config) getEnv() {
 
 	if envar := viper.GetString("SERVICE_ACCOUNT_REDIRECT_ADDR"); envar != "" {
 		config.OAuth2.RedirectAddr = envar
+	}
+
+	if envar := viper.GetString("DSN"); envar != "" {
+		config.DB.DSN = envar
 	}
 }
 

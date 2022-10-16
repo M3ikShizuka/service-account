@@ -5,11 +5,10 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"service-account/internal/service"
 	"service-account/internal/transport/http/response"
 )
 
-func (h *Handler) loginGet(context *gin.Context) {
+func (h *Handler) signupGet(context *gin.Context) {
 	// Login sessions, prompt, max_age, id_token_hint
 	// https://<hydra-public>:4444/oauth2/auth?prompt=login&max_age=60&id_token_hint=...'
 	// SRC: https://www.ory.sh/docs/hydra/concepts/login#login-sessions-prompt-max_age-id_token_hint
@@ -61,7 +60,7 @@ func (h *Handler) loginGet(context *gin.Context) {
 		})
 }
 
-func (h *Handler) loginPost(context *gin.Context) {
+func (h *Handler) signupPost(context *gin.Context) {
 	// Check authN data
 	// redirect to hydra public :4444/ouath2/auth
 	// Code 302
@@ -72,18 +71,7 @@ func (h *Handler) loginPost(context *gin.Context) {
 	}
 
 	submit := context.PostForm("submit")
-	if submit == submitDenyAccess {
-		// Reject login request.
-		redirectTo, err := h.services.OAuth2.RejectLoginRequest(context, challenge, "access_denied", "The resource owner denied the request")
-		if err != nil {
-			// Error request to hydra OAuth admin API.
-			response.AbortError(context, http.StatusInternalServerError, err)
-			return
-		}
-
-		context.Redirect(http.StatusFound, redirectTo)
-		return
-	} else if submit != submitLogIn {
+	if submit != submitLogIn {
 		response.AbortMessage(context, http.StatusBadRequest, "Unexpected submit!")
 		return
 	}
@@ -92,12 +80,9 @@ func (h *Handler) loginPost(context *gin.Context) {
 	var userEmail = context.PostForm("email")
 	var userPassword = context.PostForm("password")
 
-	// Check authentication.
-	inputUserData := &service.UserSignInInput{
-		Email:    userEmail,
-		Password: userPassword,
-	}
-	if err := h.services.User.SignIn(context, inputUserData); err != nil {
+	// Register user.
+	// TODO: call func from authN.
+	if userEmail != "foo@bar.com" || userPassword != "foobar" {
 		// Render login html with error.
 		// TODO: csrfToken for forms.
 		context.HTML(http.StatusOK, "login.html",
@@ -105,7 +90,7 @@ func (h *Handler) loginPost(context *gin.Context) {
 				"csrfToken": "",
 				"challenge": challenge,
 				"action":    "/login",
-				"error":     err.Error(),
+				"error":     "Provided credentials are wrong, try foo@bar.com:foobar",
 			},
 		)
 		return

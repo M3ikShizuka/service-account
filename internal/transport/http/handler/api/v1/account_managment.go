@@ -16,7 +16,7 @@ const (
 	pathUser string = "/user"
 )
 
-func handlerUserGet(context *gin.Context) {
+func userGet(context *gin.Context) {
 	// !!! Call busines logic func() which return data. !!!
 	data := User{
 		Id:   31,
@@ -25,7 +25,7 @@ func handlerUserGet(context *gin.Context) {
 	context.IndentedJSON(http.StatusOK, data)
 }
 
-func handlerUserPost(context *gin.Context) {
+func userPost(context *gin.Context) {
 	var dataUser User
 	if err := context.BindJSON(&dataUser); err != nil {
 		return

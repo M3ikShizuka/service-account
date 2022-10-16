@@ -14,6 +14,7 @@ const (
 	submitYes         = "Yes"
 	// Paths
 	pathRoot                      = "/"
+	pathSignup             string = "/signup"
 	pathLogin              string = "/login"
 	pathConsent            string = "/consent"
 	pathCallback           string = "/callback"

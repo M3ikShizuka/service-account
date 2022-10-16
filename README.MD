@@ -1,3 +1,9 @@
+# TODO
+
+```
+1. Написать основные функции для управления аккаунтом
+2. Написать Unit tests для котролера базы данных.
+```
 # Service Account
 User's account management service.
 
@@ -5,6 +11,7 @@ User's account management service.
 Change params in `configs/config.yml` file if necessary.
 
 ## Libs
+* [Argon2id]() - user account password hash algorithm for store in database.
 * [viper](https://github.com/spf13/viper) - configuration 
 * [zap](https://github.com/uber-go/zap) - logging
 

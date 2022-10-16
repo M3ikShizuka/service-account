@@ -4,10 +4,21 @@ import (
 	"golang.org/x/net/context"
 	"service-account/internal/config"
 	"service-account/internal/domain"
+	"service-account/internal/repository"
 	"service-account/internal/service/authz/oauth2"
 )
 
 //go:generate mockgen -source=service.go -destination=mocks/mock.go
+
+type Hasher interface {
+	Hash(password string, salt []byte) []byte
+}
+
+// Dependencies of services.
+type Depends struct {
+	UserRepo *repository.User
+	Hasher   Hasher
+}
 
 type OAuth2 interface {
 	TokenExchange(ctx context.Context, code string) (*domain.Token, error)
@@ -24,17 +35,26 @@ type OAuth2 interface {
 	GetAuthCodeUrl() string
 }
 
+type User interface {
+	SignUp(ctx context.Context, inputUserData *UserSignUpInput) error
+	SignIn(ctx context.Context, inputUserData *UserSignInInput) error
+}
+
 type Services struct {
 	Config *config.Config
 	OAuth2 OAuth2 // AuthZ
+	User   User
 	// TODO: AuthN  *authn.AuthNHandler   // AuthN
 }
 
-func NewService(cfg *config.Config) *Services {
+func NewService(cfg *config.Config, depends *Depends) *Services {
 	oa2 := oauth2.NewOAuth2Service(&cfg.OAuth2)
+	userService := NewUserSerices(depends.UserRepo, depends.Hasher)
+
 	return &Services{
 		Config: cfg,
 		OAuth2: oa2,
+		User:   userService,
 		// TODO: AuthN
 	}
 }
