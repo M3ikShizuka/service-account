@@ -2,25 +2,16 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"     // swagger embed files
+	ginSwagger "github.com/swaggo/gin-swagger" // gin-swagger middleware
+	_ "service-account/api"
 	"service-account/internal/service"
 	"service-account/internal/transport/http/handler/api/v1"
 )
 
 const (
-	submitDenyAccess  = "Deny access"
-	submitLogIn       = "Log in"
-	submitAllowAccess = "Allow access"
-	submitNo          = "No"
-	submitYes         = "Yes"
 	// Paths
-	pathRoot                      = "/"
-	pathSignup             string = "/signup"
-	pathLogin              string = "/login"
-	pathConsent            string = "/consent"
-	pathCallback           string = "/callback"
-	pathLogout             string = "/logout"
-	pathLogoutBackchannel  string = "/backchannel-logout"
-	pathLogoutFrontchannel string = "/frontchannel-logout"
+	pathRoot = "/"
 )
 
 type Handler struct {
@@ -39,7 +30,6 @@ func (h *Handler) Init() *gin.Engine {
 	h.initHTMLGlob(router)
 	// Init general routes.
 	h.initGeneralRoutes(router)
-	h.initHandlersAuthentication(router)
 	// Init API
 	h.initAPI(router)
 
@@ -52,27 +42,8 @@ func (h *Handler) initHTMLGlob(router *gin.Engine) {
 }
 
 func (h *Handler) initAPI(router *gin.Engine) {
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	// Init API v1 h.
-	handlersV1 := v1.NewHandlerAPIv1(h.services)
-	api := router.Group("/api")
-	{
-		handlersV1.Init(api)
-	}
-}
-
-func (h *Handler) initHandlersAuthentication(router *gin.Engine) {
-	// Init router.
-	// Log in
-	router.GET(pathLogin, h.loginGet)
-	router.POST(pathLogin, h.loginPost)
-	// Consent
-	router.GET(pathConsent, h.consentGet)
-	router.POST(pathConsent, h.consentPost)
-	// Callback
-	router.GET(pathCallback, h.callback)
-	// Logout
-	router.GET(pathLogout, h.logoutGet)
-	router.POST(pathLogout, h.logoutPost)
-	router.Any(pathLogoutBackchannel, h.logoutBackchannel)
-	router.GET(pathLogoutFrontchannel, h.logoutFrontchannel)
+	handlersV1 := v1.NewHandlerAccountManagementAPI(h.services)
+	handlersV1.Init(&router.RouterGroup)
 }

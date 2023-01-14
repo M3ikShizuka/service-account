@@ -4,8 +4,6 @@ import (
 	"golang.org/x/net/context"
 	"service-account/internal/config"
 	"service-account/internal/domain"
-	"service-account/internal/repository"
-	"service-account/internal/service/authz/oauth2"
 )
 
 //go:generate mockgen -source=service.go -destination=mocks/mock.go
@@ -14,9 +12,15 @@ type Hasher interface {
 	Hash(password string, salt []byte) []byte
 }
 
+type UserRepository interface {
+	Create(ctx context.Context, user *domain.User) error
+	GetUserByEmail(ctx context.Context, email string) (*domain.User, error)
+	GetUserById(ctx context.Context, id uint32) (*domain.User, error)
+}
+
 // Dependencies of services.
 type Depends struct {
-	UserRepo *repository.User
+	UserRepo UserRepository
 	Hasher   Hasher
 }
 
@@ -37,7 +41,8 @@ type OAuth2 interface {
 
 type User interface {
 	SignUp(ctx context.Context, inputUserData *UserSignUpInput) error
-	SignIn(ctx context.Context, inputUserData *UserSignInInput) error
+	SignIn(ctx context.Context, inputUserData *UserSignInInput) (*domain.User, error)
+	GetUserById(ctx context.Context, id uint32) (*domain.User, error)
 }
 
 type Services struct {
@@ -47,12 +52,14 @@ type Services struct {
 	// TODO: AuthN  *authn.AuthNHandler   // AuthN
 }
 
-func NewService(cfg *config.Config, depends *Depends) *Services {
-	oa2 := oauth2.NewOAuth2Service(&cfg.OAuth2)
-	userService := NewUserSerices(depends.UserRepo, depends.Hasher)
-
+func NewService(
+	config *config.Config,
+	depends *Depends,
+	oa2 OAuth2,
+	userService User,
+) *Services {
 	return &Services{
-		Config: cfg,
+		Config: config,
 		OAuth2: oa2,
 		User:   userService,
 		// TODO: AuthN

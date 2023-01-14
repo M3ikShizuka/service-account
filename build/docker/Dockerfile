@@ -19,6 +19,7 @@ WORKDIR /app
 COPY --from=build /service-account /app/service-account
 COPY ./configs ./configs
 COPY ./web/template ./web/template
+COPY ./tools ./tools
 EXPOSE 3000
 # USER nonroot:nonroot
 ENTRYPOINT [ "./service-account" ]

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+<h1 id="login-title">Please log in</h1>
+<p>{{ .error }}</p>
+<form method="POST" action="{{ .action }}">
+    <table>
+        <tr>
+            <td>user name</td>
+            <td><input type="text" id="username" name="username"></td>
+        </tr>
+        <tr>
+            <td>email</td>
+            <td><input type="email" id="email" name="email" placeholder="email@foobar.com"></td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td><input type="password" id="password" name="password"></td>
+        </tr>
+        <tr>
+            <td>repeat password</td>
+            <td><input type="password" id="passwordConfirm" name="passwordConfirm"></td>
+        </tr>
+    </table>
+    <br>
+    <input type="submit" id="register" name="submit" value="Register">
+</form>
+<script>
+    //in Vanilla JavaScript
+    window.addEventListener("load", function() {
+        const buttonSignIn = document.getElementById("register");
+        buttonSignIn.onclick = function(event) {
+            // Don't follow the link
+            event.preventDefault();
+
+            // Check password.
+            const password = document.getElementById("password").value;
+            const passwordConfirm = document.getElementById("passwordConfirm").value;
+
+            if (password.localeCompare(passwordConfirm) != 0) {
+                const error = "The password and confirmation password do not match!";
+                console.log(error);
+                alert(error);
+                return;
+            }
+
+            // Send registration request.
+            fetch("{{ .action }}", {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: `username=` + document.getElementById("username").value + `&email=` + document.getElementById("email").value + `&password=` + password + `&submit=Register`
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (Object.hasOwn(data, "error")) {
+                        const error = data.error;
+                        console.info(error);
+                        alert(error);
+                        return;
+                    }
+
+                    // Response processing.
+                    if (data.redirect_url) {
+                        window.location.href = data.redirect_url;
+                    }
+                })
+                .catch(function(error) {
+                    console.info(error);
+                    alert(error);
+                });
+        }
+    });
+</script>
+</body>
+
+</html>

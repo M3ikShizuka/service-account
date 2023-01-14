@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"service-account/internal/transport/http/coockie"
+	v1 "service-account/internal/transport/http/handler/api/v1"
 	"service-account/internal/transport/http/response"
 	"service-account/pkg/logger"
 )
@@ -20,7 +21,7 @@ func (h *Handler) rootGet(context *gin.Context) {
 	// https://<hydra-public>:4444/oauth2/auth?prompt=login&max_age=60&id_token_hint=...'
 	// SRC: https://www.ory.sh/docs/hydra/concepts/login#login-sessions-prompt-max_age-id_token_hint
 	// We can get login_challenge by sent id_token_hint for re-auth automaticly.
-	var accessToken, _ = coockie.GetValue(context.Request, "access_token")
+	accessToken, _ := coockie.GetValue(context.Request, "access_token")
 	var isAuth bool
 
 	if accessToken != "" {
@@ -60,7 +61,7 @@ func (h *Handler) rootGet(context *gin.Context) {
 	context.HTML(http.StatusOK, "index.html", gin.H{
 		"isAuth":    isAuth,
 		"URLsignin": h.services.OAuth2.GetAuthCodeUrl(),
-		"URLsignup": pathSignup,
+		"URLsignup": v1.PathSignup,
 	})
 }
 

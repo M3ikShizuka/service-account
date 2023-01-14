@@ -16,5 +16,6 @@ func (h *OAuth2Service) IntrospectOAuth2Token(context context.Context, accessTok
 
 	return &domain.OA2TokenIntrospection{
 		Active: tokenIntrospection.GetActive(),
+		Sub:    tokenIntrospection.Sub,
 	}, nil
 }

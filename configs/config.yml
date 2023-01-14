@@ -21,3 +21,4 @@ oauth2:
   redirect_addr: "127.0.0.1:3000"
 database:
   dsn: "postgres://mikhailgorbachev666:82M3TLiz7SttMrLu2bTe&@127.0.0.1:5433/db_service_account?sslmode=disable"
+  salt: "1234567890qwerty"

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title></title>
+</head>
+
+<body>
+<h1 id="login-title">Please log in</h1>
+<p>{{ .error }}</p>
+<form method="POST" action="{{ .action }}">
+    <input type="hidden" name="_csrf" value="{{ ._csrf }}">
+    <input type="hidden" name="challenge" value="{{ .challenge }}">
+    <table>
+        <tr>
+            <td>email</td>
+            <td><input type="email" id="email" name="email" value="{{ .hint }}" placeholder="email@foobar.com"></td>
+        </tr>
+        <tr>
+            <td>password</td>
+            <td><input type="password" id="password" name="password"></td>
+        </tr>
+    </table><input type="checkbox" id="remember" name="remember" checked value="1">
+    <label for="remember">Remember me</label>
+    <br>
+    <input type="submit" id="accept" name="submit" value="Log in">
+    <input type="submit" id="reject" name="submit" value="Deny access">
+</form>
+</body>
+
+</html>

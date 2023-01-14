@@ -12,6 +12,7 @@ import (
 	"service-account/internal/path"
 	"service-account/internal/repository"
 	"service-account/internal/service"
+	"service-account/internal/service/authz/oauth2"
 	"service-account/internal/transport/http/handler"
 	"service-account/internal/transport/http/server"
 	"service-account/pkg/hash"
@@ -76,13 +77,20 @@ func Run() {
 	// Init dependencies.
 	userRepo := repository.NewUsersRepo(db)
 	hasher := new(hash.HasherArgon2id)
+	depends := &service.Depends{
+		UserRepo: userRepo,
+		Hasher:   hasher,
+	}
+
+	oa2 := oauth2.NewOAuth2Service(&serviceConfig.OAuth2)
+	userService := service.NewUserSerices(depends.UserRepo, depends.Hasher, serviceConfig)
 
 	services := service.NewService(
 		serviceConfig,
-		&service.Depends{
-			UserRepo: userRepo,
-			Hasher:   hasher,
-		})
+		depends,
+		oa2,
+		userService,
+	)
 
 	// Init HTTP handlers.
 	handlerHttp := handler.NewHandler(services)

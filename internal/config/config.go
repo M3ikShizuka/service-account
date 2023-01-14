@@ -43,7 +43,8 @@ type OAuth2Config struct {
 }
 
 type Database struct {
-	DSN string `mapstructure:"dsn" validate:"required"`
+	DSN  string `mapstructure:"dsn" validate:"required"`
+	Salt string `mapstructure:"salt" validate:"required"`
 }
 
 func NewConfig() *Config {
@@ -135,8 +136,12 @@ func (config *Config) getEnv() {
 		config.OAuth2.RedirectAddr = envar
 	}
 
-	if envar := viper.GetString("DSN"); envar != "" {
+	if envar := viper.GetString("SERVICE_ACCOUNT_DSN"); envar != "" {
 		config.DB.DSN = envar
+	}
+
+	if envar := viper.GetString("SERVICE_ACCOUNT_SALT"); envar != "" {
+		config.DB.Salt = envar
 	}
 }
 

@@ -1,0 +1,418 @@
+basePath: /
+host: 127.0.0.1:3000
+info:
+  contact:
+    email: m3ikshizuka@gmail.com
+    name: M3ik Shizuka
+    url: https://m3ikshizuka.github.io/
+  description: Account management microservice.
+  title: Service-Account API
+  version: "1.0"
+paths:
+  /api/v1/users/{id}:
+    get:
+      description: get user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                user:
+                  allOf:
+                  - type: object
+                  - properties:
+                      date_last_online:
+                        type: string
+                      date_registration:
+                        type: string
+                      email:
+                        type: string
+                      id:
+                        type: integer
+                      username:
+                        type: string
+                    type: object
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "403":
+          description: Forbidden
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      security:
+      - ApiKeyAuth: []
+      summary: Get user info
+      tags:
+      - user
+  /backchannel-logout:
+    get:
+      description: Logout user back channel delete tokens from storage.
+      responses: {}
+      summary: Logout user back channel
+      tags:
+      - auth
+  /callback:
+    post:
+      description: Get authorization token from AuthZ service.
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Authorization callback
+      tags:
+      - auth
+  /consent:
+    get:
+      description: Get consent page for the issuance of user rights
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Consent user
+      tags:
+      - auth
+    post:
+      description: User consent for the issuance of rights
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Consent user
+      tags:
+      - auth
+  /frontchannel-logout:
+    get:
+      description: Logout user front channel delete tokens from storage.
+      responses: {}
+      summary: Logout user front channel
+      tags:
+      - auth
+  /logout:
+    get:
+      description: Get logout page
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Logout user
+      tags:
+      - auth
+    post:
+      description: Logout user
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Logout user
+      tags:
+      - auth
+  /signin:
+    get:
+      description: Get signin page
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Signin user
+      tags:
+      - auth
+    post:
+      description: Signin user
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Signin user
+      tags:
+      - auth
+  /signup:
+    get:
+      description: Get signup page
+      produces:
+      - text/html
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Signup user
+      tags:
+      - auth
+    post:
+      description: Signup user
+      produces:
+      - text/html
+      responses:
+        "302":
+          description: Found
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - type: object
+            - properties:
+                error:
+                  type: string
+              type: object
+      summary: Signup user
+      tags:
+      - auth
+securityDefinitions:
+  ApiKeyAuth:
+    description: OAuth 2.0 AuthZ
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
